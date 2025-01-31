@@ -74,7 +74,7 @@ class Windows
     std::string resourcesPath = "resources/";
     std::string textureFile = resourcesPath + "Background.jpg";
     sf::Texture bgTexture;
-    sf::Sprite  bgSprite; // -- Need to repair this moment with Sprite initialization
+    sf::Sprite  bgSprite; // !!!!!!! Need to repair this moment with Sprite initialization !!!!!!!
 };
 
 int main() {
