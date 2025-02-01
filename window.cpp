@@ -1,13 +1,27 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+template<typename T>
+using DeclPtr = std::unique_ptr<T>;
+template<typename T>
+using MakePtr = std::make_unique<T>;
+
+using RendWindow_ptr = DeclPtr<sf::RenderWindow>;
+using Texture_ptr = DeclPtr<sf::Texture>;
+using Sprite_ptr = DeclPtr<sf::Sprite>;
+
+using m_RendWindow = MakePtr<sf::RenderWindow>;
+using m_Texture = MakePtr<sf::Texture>;
+using m_Sprite = MakePtr<sf::Sprite>;
+
+
 class Windows
 {
     public:
     Windows() // Initialization of window
     {
-        window = std::make_unique<sf::RenderWindow>
-                    (sf::VideoMode(sf::Vector2u(width, height)), title);
+        window = m_RendWindow
+                    (sf::VideoMode(sf::Vector2u(WindowParams.width, WindowParams.height)), WindowParams.title);
     }
     ~Windows()
     {
@@ -31,7 +45,7 @@ class Windows
         std::cout << "-Button: ESC;\n";
         Exit();
     }
-    void DrawMake()     // Update frame
+    void DrawDisplay()     // Update frame
     {
         window->clear();
         window->draw(*bgSprite);
@@ -49,15 +63,19 @@ class Windows
     }
 
     private:
-    std::string title = "SFML Game";    // A title of window -- on the upside of programm
-    uint16_t    width = 1920,           // A window width  -- x: 0 - 1919bits on window
-                height = 1080;          // A window height -- y: 0 - 1079bits on window
-    std::unique_ptr<sf::RenderWindow> window;
+    struct // All parameter of window wich connected to the window in any way
+    {
+        std::string title = "SFML Game";    // A title of window -- on the upside of programm
+        uint16_t    width = 1920,           // A window width  -- x: 0 - 1919bits on window
+                    height = 1080;          // A window height -- y: 0 - 1079bits on window
+    }WindowParams;
+
+    RendWindow_ptr window;
 
     std::string resourcesPath = "resources/";
     std::string textureFile = resourcesPath + "Background.jpg";
-    sf::Texture* bgTexture = new sf::Texture(textureFile);
-    sf::Sprite* bgSprite = new sf::Sprite(*bgTexture);
+    Texture_ptr bgTexture   = m_Texture(textureFile);
+    Sprite_ptr bgSprite     = m_Sprite(*bgTexture);
 };
 
 int main() {
@@ -77,7 +95,9 @@ int main() {
                     }                   
                 }
             }
-            window.DrawMake();
+
+
+            window.DrawDisplay();
         }
     }
     catch(const std::exception ex)
