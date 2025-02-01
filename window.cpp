@@ -1,18 +1,24 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
+
+
+namespace ptr_decls
+{
 template<typename T>
 using DeclPtr = std::unique_ptr<T>;
 template<typename T>
 using MakePtr = std::make_unique<T>;
 
-using RendWindow_ptr = DeclPtr<sf::RenderWindow>;
-using Texture_ptr = DeclPtr<sf::Texture>;
-using Sprite_ptr = DeclPtr<sf::Sprite>;
+using ptr_RendWindow = DeclPtr<sf::RenderWindow>;
+using ptr_Texture = DeclPtr<sf::Texture>;
+using ptr_Sprite = DeclPtr<sf::Sprite>;
 
 using m_RendWindow = MakePtr<sf::RenderWindow>;
 using m_Texture = MakePtr<sf::Texture>;
 using m_Sprite = MakePtr<sf::Sprite>;
+}
+
 
 
 class Windows
@@ -20,7 +26,7 @@ class Windows
     public:
     Windows() // Initialization of window
     {
-        window = m_RendWindow
+        window = ptr_decls::m_RendWindow
                     (sf::VideoMode(sf::Vector2u(WindowParams.width, WindowParams.height)), WindowParams.title);
     }
     ~Windows()
@@ -70,12 +76,12 @@ class Windows
                     height = 1080;          // A window height -- y: 0 - 1079bits on window
     }WindowParams;
 
-    RendWindow_ptr window;
+    ptr_decls::ptr_RendWindow window;
 
     std::string resourcesPath = "resources/";
     std::string textureFile = resourcesPath + "Background.jpg";
-    Texture_ptr bgTexture   = m_Texture(textureFile);
-    Sprite_ptr bgSprite     = m_Sprite(*bgTexture);
+    ptr_decls::ptr_Texture bgTexture   = ptr_decls::m_Texture(textureFile);
+    ptr_decls::ptr_Sprite bgSprite     = ptr_decls::m_Sprite(*bgTexture);
 };
 
 int main() {
