@@ -1,8 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
-#define DEFAULT_POSITION sf::Vector2f(0, 0)
-
 class Windows
 {
     public:
@@ -10,25 +8,10 @@ class Windows
     {
         window = std::make_unique<sf::RenderWindow>
                     (sf::VideoMode(sf::Vector2u(width, height)), title);
-        if(!initTexture())
-        {
-            Abort_Exit();
-        }
     }
     ~Windows()
     {
         std::cout << "\n-----Window get closed!-----\n" << std::endl;
-    }
-
-    bool initTexture()
-    {
-        if(!bgTexture.loadFromFile(textureFile))
-        {
-            return false;
-        }
-        bgSprite.setTexture(bgTexture);
-        bgSprite.setPosition(sf::Vector2f(0, 0));
-        return true;
     }
 
     void Abort_Exit()
@@ -51,7 +34,7 @@ class Windows
     void DrawMake()     // Update frame
     {
         window->clear();
-        window->draw(bgSprite);
+        window->draw(*bgSprite);
         window->display();
     }
 
@@ -73,8 +56,8 @@ class Windows
 
     std::string resourcesPath = "resources/";
     std::string textureFile = resourcesPath + "Background.jpg";
-    sf::Texture bgTexture;
-    sf::Sprite  bgSprite; // !!!!!!! Need to repair this moment with Sprite initialization !!!!!!!
+    sf::Texture* bgTexture = new sf::Texture(textureFile);
+    sf::Sprite* bgSprite = new sf::Sprite(*bgTexture);
 };
 
 int main() {
