@@ -4,6 +4,8 @@
 #include <iterator>
 #include <array>
 
+
+
 #ifndef _DECLARATIONS_
 #define _DECLARATIONS_
 
@@ -15,10 +17,11 @@
         template<typename T, size_t size>
         using ptr_Arr                   = std::array<T, size>;
 
+        using ptr_Texture               = DeclPtr<sf::Texture>;
         using ptr_RendWindow            = DeclPtr<sf::RenderWindow>;
         using ptr_Obj                   = DeclPtr<sf::Sprite>;
     }
-    
+
     using path = std::string;
 
     using vec2f                         = sf::Vector2<float>;
@@ -26,12 +29,13 @@
 
     #define m_RendWindow                std::make_unique<sf::RenderWindow>
     #define m_Texture                   std::make_unique<sf::Texture>
-    #define m_Obj(path_to_file)         std::make_unique<sf::Sprite>(sf::Texture(path_to_file))
+    #define m_Obj                       std::make_unique<sf::Sprite>
 
 #endif // _DECLARATIONS_
 
 #ifndef _CLASS_WINDOW_
 #define _CLASS_WINDOW_
+
 
 class Windows
 {
@@ -76,25 +80,26 @@ class Windows
 
     void DrawBackground()
     {
-        window->draw(*backgroundObj);
+        window->draw(*o_background);
     }
     void DrawTree()
     {
-        treeObj->setPosition(TreeParams.pos);
-        window->draw(*treeObj);
+        o_tree->setPosition(TreeParams.pos);
+        window->draw(*o_tree);
     }
     void DrawBee()
     {
-        window->draw(*beeObj);
+        o_bee->setPosition(BeeParams.pos);
+        window->draw(*o_bee);
     }
-    // void DrawClouds()
-    // {
-    //     for(int i = 0; i < 3; i++)
-    //     {
-    //         cloudArr.at(i)->setPosition(CloudParams.pos[i]);
-    //         window->draw(*cloudArr.at(i));
-    //     }
-    // }
+    void DrawClouds()
+    {
+        for(int i = 0; i < CloudParams.cloudCount; i++)
+        {
+            oa_cloud[i]->setPosition(CloudParams.pos[i]);
+            window->draw(*oa_cloud[i]);
+        }
+    }
 
 //--------------------------------------------------
 
@@ -106,29 +111,29 @@ void Update()
         DrawBackground();
         DrawTree();
         DrawBee();
-        //DrawClouds();
+        DrawClouds();
 
         window->display();
     }
 //---------------------------------------------------
     private:
 
-    // struct 
-    // {
-    //     size_t cloudCount = 3;
-    //     ptr_decls::ptr_Arr<vec2f, 3> pos
-    //     {
-    //         vec2f{0, 0}, 
-    //         vec2f{0, 250}, 
-    //         vec2f{0, 500}
-    //     };
-    //     ptr_decls::ptr_Arr<bool, 3> active{false};
-    // }CloudParams;
-
+    struct 
+    {
+        size_t cloudCount = 3;
+        vec2f pos[3]
+        {
+            vec2f{0, 0}, 
+            vec2f{0, 250}, 
+            vec2f{0, 500}
+        };
+        bool active[3]{};
+    }CloudParams;
     struct
     {
         bool active = false;
         float speed = .0f;
+        vec2f pos{0, 800};
     }BeeParams;
     struct
     {
@@ -144,15 +149,20 @@ void Update()
     ptr_decls::ptr_RendWindow window;
 
     path r_dir /*Resources directory*/ = "resources/"; 
-    path p_backgroundTexture            = r_dir + "background.png";
-    path p_treeTexture                  = r_dir + "tree.png";
-    path p_beeTexture                   = r_dir + "bee.png";
-    path p_cloudTexture                 = r_dir + "cloud.png";
+    path p_background            = r_dir + "background.png";
+    path p_tree                  = r_dir + "tree.png";
+    path p_bee                   = r_dir + "bee.png";
+    path p_cloud                 = r_dir + "cloud.png";
 
-    ptr_decls::ptr_Obj backgroundObj    = m_Obj(p_backgroundTexture);
-    ptr_decls::ptr_Obj treeObj          = m_Obj(p_treeTexture);
-    ptr_decls::ptr_Obj beeObj           = m_Obj(p_beeTexture);
-    //ptr_decls::ptr_Arr<ptr_decls::ptr_Obj, 3> cloudArr{m_Obj(p_cloudTexture)};
+    ptr_decls::ptr_Texture t_background = m_Texture(p_background);
+    ptr_decls::ptr_Texture t_tree       = m_Texture(p_tree);
+    ptr_decls::ptr_Texture t_bee        = m_Texture(p_bee);
+    ptr_decls::ptr_Texture t_cloud      = m_Texture(p_cloud);
+
+    ptr_decls::ptr_Obj o_background    = m_Obj(*t_background);
+    ptr_decls::ptr_Obj o_tree          = m_Obj(*t_tree);
+    ptr_decls::ptr_Obj o_bee           = m_Obj(*t_bee);
+    ptr_decls::ptr_Obj oa_cloud[3]     = {m_Obj(*t_cloud), m_Obj(*t_cloud), m_Obj(*t_cloud)};
 };
 
 #endif // _CLASS_WINDOW_
