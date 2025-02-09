@@ -3,7 +3,8 @@
 int main() {
     try{
         Windows window;
-        while (window.isOpen()) {
+        while (window.isOpen()) 
+        {
             while (const auto event = window.getEvent())
             {
                 if (event->is<sf::Event::Closed>())
@@ -18,6 +19,7 @@ int main() {
                 }
             }
             window.Update();
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
     catch(const std::exception ex)
