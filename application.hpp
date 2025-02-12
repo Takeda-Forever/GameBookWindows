@@ -6,15 +6,7 @@
 
 /*
 Task:
-Recover the frame update time & make the bee move;
-
-Last log:
-    beeSetup:  [x:2000 y:727 frame:0.378534 speed:398];
-    beeNewPos: [x:2000 y:727 frame:0        speed:398];
-    beeNewPos: [x:2000 y:727 frame:0        speed:398];
-    beeNewPos: [x:2000 y:727 frame:0        speed:398];
-    beeNewPos: [x:2000 y:727 frame:0        speed:398];
-    beeNewPos: [x:2000 y:727 frame:0        speed:398];
+- Add movement for clouds;
 */
 
 #ifndef _DECLARATIONS_
@@ -28,8 +20,6 @@ Last log:
         using ptr_Texture               = DeclPtr<sf::Texture>;
         using ptr_RendWindow            = DeclPtr<sf::RenderWindow>;
         using ptr_Obj                   = DeclPtr<sf::Sprite>;
-        using ptr_Clock                 = DeclPtr<sf::Clock>;
-        using ptr_Time                 = DeclPtr<sf::Time>;
     }
 
     using path = std::string;
@@ -57,7 +47,6 @@ class Windows
     {
         window = m_RendWindow
                     (sf::VideoMode(sf::Vector2u(WindowParams.width, WindowParams.height)), WindowParams.title);
-        clock->start();
     }
 
     ~Windows()
@@ -90,46 +79,45 @@ class Windows
     {
         return window->pollEvent();
     }
-    auto restartTime()
-    {
-        dt = m_Time(clock->reset());
-        //std::cout << "New frame: [frame:" << dt->asMilliseconds() << "];\n";
-    }
+    // auto restartTime()
+    // {
+    //     dt = m_Time(clock->reset());
+    //     //std::cout << "New frame: [frame:" << dt->asMilliseconds() << "];\n";
+    // }
 //--------------------------------------------------
+    void printC(std::string complite)
+    {
+        std::cout << "DO: " << complite << std::endl;
+    }
+
 
 //---------------------- Bee -----------------------
+    void printBeeParams()
+    {
+        std::cout << "BeeParams: \n"
+        " - [x:" << BeeParams.pos.x << "],\n" <<
+        " - [y:" << BeeParams.pos.y << "],\n" <<
+        " - [speed:" << BeeParams.speed << "],\n" <<
+        " - [active: " << std::boolalpha << BeeParams.active << "];\n\n";
+    }
     void beeSetup()
     {
-
-            srand((int)time(0));
+            printC("beeSetup");
             BeeParams.speed = (rand() % 200) + 200;
-
-            srand((int)time(0) * 10);
             float height = (rand() % 500) + 500;
-            BeeParams.pos = vec2f(2000, height);
+            BeeParams.pos = vec2f(1200, height);
             o_bee->setPosition(BeeParams.pos);
             BeeParams.active = true;
-
+            printBeeParams();
     }
-    void beeUpdatePos()
+    void beeSetPos(const float second)
     {
+        BeeParams.pos.x -= BeeParams.speed * second;
         o_bee->setPosition(BeeParams.pos);
     }
-    void beeSetPos()
+    void beeUpdate(const float second)
     {
-        auto beePosX = o_bee->getPosition().x,
-             beePosY = o_bee->getPosition().y;
-        auto beeSpeed = BeeParams.speed;
-        auto frame = dt->asSeconds();
-        
-        BeeParams.pos = vec2f(beePosX - (beeSpeed * frame), beePosY);
-        std::cout << "beeNewPos: [x:" << BeeParams.pos.x << " y:" << BeeParams.pos.y << " frame:" << frame << " speed:" << beeSpeed << "];\n";
-        
-    }
-    void beeUpdate()
-    {
-        beeSetPos();
-        beeUpdatePos();
+        beeSetPos(second);
         if(BeeParams.isEdge())
         {
             BeeParams.active = false;
@@ -149,18 +137,15 @@ class Windows
         o_tree->setPosition(TreeParams.pos);
         window->draw(*o_tree);
     }
-    void DrawBee()
+    void DrawBee(const float second)
     {
-        restartTime();
         if(BeeParams.active == false)
-
         {
             beeSetup();
-            std::cout << "beeSetup: [x:" << BeeParams.pos.x << " y:" << BeeParams.pos.y << " frame:" << dt->asSeconds() << " speed:" << BeeParams.speed << "];\n";
         }
         else
         {
-            beeUpdate();
+            beeUpdate(second);
         }
         window->draw(*o_bee);
     }
@@ -176,15 +161,15 @@ class Windows
 //--------------------------------------------------
 
 //--------------------- Update ---------------------
-void Update()
+void Update(const float second)
     {
+        //printC("Update");
         window->clear();
 
         DrawBackground();
         DrawTree();
-        DrawBee();
-        DrawClouds();
-        dt.reset();
+        DrawBee(second);
+        //DrawClouds();
         window->display();
     }
 //---------------------------------------------------
@@ -204,7 +189,7 @@ void Update()
     struct
     {
         bool active = false;
-        float speed = .0f;
+        float speed = 150.0f;
         vec2f pos{0, 800};
         bool isEdge()
         {
@@ -226,8 +211,6 @@ void Update()
 //-------------------- Variables --------------------
 //****************************** Others ******************************
     ptr_decls::ptr_RendWindow window;
-    ptr_decls::ptr_Time dt;
-    ptr_decls::ptr_Clock clock          = m_Clock();
 //******************************* Paths ******************************
     path r_dir /*Resources directory*/ = "resources/"; 
     path p_background            = r_dir + "background.png";
