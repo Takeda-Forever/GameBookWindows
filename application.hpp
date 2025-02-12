@@ -48,7 +48,6 @@ class Windows
         window = m_RendWindow
                     (sf::VideoMode(sf::Vector2u(WindowParams.width, WindowParams.height)), WindowParams.title);
     }
-
     ~Windows()
     {
         std::cout << "\n-----Window get closed!-----\n" << std::endl;
@@ -79,17 +78,11 @@ class Windows
     {
         return window->pollEvent();
     }
-    // auto restartTime()
-    // {
-    //     dt = m_Time(clock->reset());
-    //     //std::cout << "New frame: [frame:" << dt->asMilliseconds() << "];\n";
-    // }
-//--------------------------------------------------
     void printC(std::string complite)
     {
         std::cout << "DO: " << complite << std::endl;
     }
-
+//--------------------------------------------------
 
 //---------------------- Bee -----------------------
     void printBeeParams()
@@ -105,7 +98,7 @@ class Windows
             printC("beeSetup");
             BeeParams.speed = (rand() % 200) + 200;
             float height = (rand() % 500) + 500;
-            BeeParams.pos = vec2f(1200, height);
+            BeeParams.pos = vec2f(2000, height);
             o_bee->setPosition(BeeParams.pos);
             BeeParams.active = true;
             printBeeParams();
@@ -122,6 +115,40 @@ class Windows
         {
             BeeParams.active = false;
             std::cout << "bee get Edge of window: [x:" << BeeParams.pos.x << " y:" << BeeParams.pos.y << "];\n";
+        }
+    }
+//--------------------------------------------------
+
+//--------------------- Cloud ----------------------
+    void printCloudParam(const size_t select)
+    {
+        std::cout << 
+        " - [x:" << CloudParams.pos[select].x << "],\n" <<
+        " - [y:" << CloudParams.pos[select].y << "],\n" <<
+        " - [speed:" << CloudParams.speed[select] << "],\n" <<
+        " - [active: " << std::boolalpha << CloudParams.active[select] << "];\n\n";
+    }
+    void cloudSetup(const size_t select)
+    {
+            printC("cloudSetup");
+            CloudParams.speed[select] = (rand() % 200);
+            float height = (rand() % 150);
+            CloudParams.pos[select] = vec2f(-200, height);
+            oa_cloud[select]->setPosition(CloudParams.pos[select]);
+            CloudParams.active[select] = true;
+    }
+    void cloudSetPos(const float second, const size_t select)
+    {
+        CloudParams.pos[select].x += CloudParams.speed[select] * second;
+        oa_cloud[select]->setPosition(CloudParams.pos[select]);
+    }
+    void cloudUpdate(const float second, const size_t select)
+    {
+        cloudSetPos(second, select);
+        if(!CloudParams.isEdge(select))
+        {
+            CloudParams.active[select] = false;
+            std::cout << "cloud "<< select << " get Edge of window: [x:" << CloudParams.pos[select].x << " y:" << CloudParams.pos[select].y << "];\n";
         }
     }
 //--------------------------------------------------
@@ -149,13 +176,22 @@ class Windows
         }
         window->draw(*o_bee);
     }
-    void DrawClouds()
+    void DrawClouds(const float second)
     {
-        for(int i = 0; i < CloudParams.cloudCount; i++)
+        for(int select = 0; select < CloudParams.cloudCount; select++)
         {
-            oa_cloud[i]->setPosition(CloudParams.pos[i]);
-            window->draw(*oa_cloud[i]);
+            if(!CloudParams.active[select])
+            {
+                cloudSetup(select);
+                std::cout << "Cloud #" << select+1 << ":\n";
+                printCloudParam(select);
+            }
+            else{
+                cloudUpdate(second, select);
+            }
+            window->draw(*oa_cloud[select]);
         }
+
     }
 
 //--------------------------------------------------
@@ -169,7 +205,8 @@ void Update(const float second)
         DrawBackground();
         DrawTree();
         DrawBee(second);
-        //DrawClouds();
+        DrawClouds(second);
+
         window->display();
     }
 //---------------------------------------------------
@@ -177,13 +214,20 @@ void Update(const float second)
 //--------------------- Params ----------------------
     struct 
     {
-        size_t cloudCount = 3;
+        const size_t cloudCount = 3;
+        int speed[3]
+        {0, 0, 0};
+        const int edge = 1920;
         vec2f pos[3]
         {
             vec2f{0, 0}, 
             vec2f{0, 250}, 
             vec2f{0, 500}
         };
+        bool isEdge(const size_t select)
+        {
+            return pos[select].x < edge;
+        }
         bool active[3]{};
     }CloudParams;
     struct
@@ -191,9 +235,10 @@ void Update(const float second)
         bool active = false;
         float speed = 150.0f;
         vec2f pos{0, 800};
+        const int edge = -100;
         bool isEdge()
         {
-            return pos.x < -100;
+            return pos.x < edge;
         }
     }BeeParams;
     struct
