@@ -1,4 +1,4 @@
 @echo off
 echo Compiling...
 make
-echo Compile complited
+echo Compile completed

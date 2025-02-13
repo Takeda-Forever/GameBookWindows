@@ -24,9 +24,9 @@ int main() {
             window.Update(time.asSeconds());
         }
     }
-    catch(const std::exception ex)
+    catch(const sf::Exception ex)
     {
-        std::cout << ex.what() << std::endl;
+        std::cout << "Error: " << ex.what() << std::endl;
     }
     std::cout << "Press any buttons...";
     std::cin.get();
