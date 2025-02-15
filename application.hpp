@@ -9,7 +9,7 @@ Task:
 #ifdef _I_OBJ_
 #ifdef _DECLARATIONS_
 
-class Bee : protected IObjW
+class Bee : public IObjW
 {
   public:
     virtual void Draw(ptr_decls::ptr_RendWindow&, const float) override;
@@ -26,9 +26,8 @@ class Bee : protected IObjW
             return pos.x < edge;
         }
     }Params;
-    
-    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     path _path                              = r_dir + "bee.png";
+    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     ptr_decls::ptr_Obj obj                  = m_Obj(*texture);
 
     virtual void printParams()              ;
@@ -37,18 +36,18 @@ class Bee : protected IObjW
     virtual void Update(const float)        ;
 };
 
-class Background : protected IObjEx
+class Background : public IObjEx
 {
   public:
     virtual void Draw(ptr_decls::ptr_RendWindow&) override;
     
   protected:
-    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     path _path                              = r_dir + "background.png";
+    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     ptr_decls::ptr_Obj obj                  = m_Obj(*texture);
 };
 
-class Tree : protected IObjEx
+class Tree : public IObjEx
 {
   public:
     void Draw(ptr_decls::ptr_RendWindow&) override;
@@ -58,13 +57,12 @@ class Tree : protected IObjEx
     {
         vec2f pos{810, 0};
     }Params;
-    
-    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     path _path                              = r_dir + "tree.png";
+    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     ptr_decls::ptr_Obj obj                  = m_Obj(*texture);
 };
 
-class Cloud : protected IObjW
+class Cloud : public IObjW
 {
   public:
     void Draw(ptr_decls::ptr_RendWindow&, const float) override;
@@ -88,9 +86,8 @@ class Cloud : protected IObjW
         }
         bool active[3]{};
     }Params;
-    
-    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     path _path                              = r_dir + "cloud.png";
+    ptr_decls::ptr_Texture texture          = m_Texture(_path);
     ptr_decls::ptr_Obj obj[3]               = {m_Obj(*texture), m_Obj(*texture), m_Obj(*texture)};
 
 
@@ -139,6 +136,14 @@ class Windows
     {
         return window->pollEvent();
     }
+    void DrawW(ptr_decls::DeclPtr<IObjW>& obj, const float second)
+    {
+        obj->Draw(window, second);
+    }
+    void DrawEx(ptr_decls::DeclPtr<IObjEx>& obj)
+    {
+        obj->Draw(window);
+    }
 
 //--------------------------------------------------
 
@@ -147,10 +152,10 @@ void Update(const float second)
     {
         window->clear();
 
-        bg->Draw(window);
-        bee->Draw(window, second);
-        tree->Draw(window);
-        cloud->Draw(window, second);
+        DrawEx(bg);
+        DrawEx(tree);
+        DrawW(bee, second);
+        DrawW(cloud, second);
 
         window->display();
     }
@@ -167,10 +172,10 @@ void Update(const float second)
 
 //-------------------- Variables --------------------
     ptr_decls::ptr_RendWindow       window;
-    ptr_decls::DeclPtr<Bee>         bee{std::make_unique<Bee>()};
-    ptr_decls::DeclPtr<Cloud>       cloud{std::make_unique<Cloud>()};
-    ptr_decls::DeclPtr<Tree>        tree{std::make_unique<Tree>()};
-    ptr_decls::DeclPtr<Background>  bg{std::make_unique<Background>()};
+    ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
+    ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
+    ptr_decls::DeclPtr<IObjEx>      tree{std::make_unique<Tree>()};
+    ptr_decls::DeclPtr<IObjEx>      bg{std::make_unique<Background>()};
 
 //---------------------------------------------------
 };
