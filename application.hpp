@@ -12,7 +12,7 @@ Task:
 class Bee : public IObjW
 {
   public:
-    virtual void Draw(ptr_decls::ptr_RendWindow&, const float) override;
+    void Draw(ptr_decls::ptr_RendWindow&, const float) override;
     
   protected:
     struct
@@ -39,8 +39,8 @@ class Bee : public IObjW
 class Background : public IObjEx
 {
   public:
-    virtual void Draw(ptr_decls::ptr_RendWindow&) override;
-    
+    void Draw(ptr_decls::ptr_RendWindow&) override;
+
   protected:
     path _path                              = r_dir + "background.png";
     ptr_decls::ptr_Texture texture          = m_Texture(_path);
@@ -51,7 +51,7 @@ class Tree : public IObjEx
 {
   public:
     void Draw(ptr_decls::ptr_RendWindow&) override;
-    
+
   protected:
     struct
     {
@@ -95,6 +95,46 @@ class Cloud : public IObjW
     void setUp(const int);
     void setPos(const float, const int);
     void Update(const float, const int);
+};
+
+class Message : public ITxt
+{
+    public:
+    void Draw(ptr_decls::ptr_RendWindow&) override;
+    Message()
+    {
+        obj->setFillColor(sf::Color::White);
+    }
+    private:
+    struct
+    {
+        sf::Font font{"resources/font.ttf"};
+        std::string word = "Press Enter to start!";
+        unsigned size = 75;
+        vec2f pos{500, 500};
+    }Params;
+    
+    ptr_decls::DeclPtr<sf::Text> obj = std::make_unique<sf::Text>(Params.font, Params.word, Params.size);
+};
+
+class Score : public ITxt
+{
+    public:
+    void Draw(ptr_decls::ptr_RendWindow&) override;
+    Score()
+    {
+        obj->setFillColor(sf::Color::White);
+    }
+    private:
+    struct
+    {
+        sf::Font font{"resources/font.ttf"};
+        int score = 0;
+        std::string word = "score = " + std::to_string(score);
+        unsigned size = 100;
+    }Params;
+    
+    ptr_decls::DeclPtr<sf::Text> obj = std::make_unique<sf::Text>(Params.font, Params.word, Params.size);
 };
 
 class Windows
@@ -144,6 +184,10 @@ class Windows
     {
         obj->Draw(window);
     }
+    void DrawT(ptr_decls::DeclPtr<ITxt>& obj)
+    {
+        obj->Draw(window);
+    }
 
 //--------------------------------------------------
 
@@ -154,8 +198,9 @@ void Update(const float second)
 
         DrawEx(bg);
         DrawEx(tree);
-        DrawW(bee, second);
-        DrawW(cloud, second);
+        //DrawW(bee, second);
+        //DrawW(cloud, second);
+        DrawT(msg);
 
         window->display();
     }
@@ -172,11 +217,11 @@ void Update(const float second)
 
 //-------------------- Variables --------------------
     ptr_decls::ptr_RendWindow       window;
-    ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
-    ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
+    //ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
+    //ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
     ptr_decls::DeclPtr<IObjEx>      tree{std::make_unique<Tree>()};
     ptr_decls::DeclPtr<IObjEx>      bg{std::make_unique<Background>()};
-
+    ptr_decls::DeclPtr<ITxt>        msg{std::make_unique<Message>()};
 //---------------------------------------------------
 };
 

@@ -1,6 +1,6 @@
 TARGET = Window
 
-SRC = window.cpp Bee.cpp Background.cpp Cloud.cpp Tree.cpp
+SRC = window.cpp Bee.cpp Background.cpp Cloud.cpp Tree.cpp Text.cpp
 
 SFML_INCLUDE_DIR = F:/ProgInc/SFML/include
 SFML_LIB_DIR = F:/ProgInc/SFML/lib

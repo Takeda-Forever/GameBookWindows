@@ -40,11 +40,17 @@ class IObj
 };
 #endif // _I_OBJ_
 
+class ITxt
+{
+    public:
+    virtual void Draw(ptr_decls::ptr_RendWindow&) = 0;
+};
+
 #ifdef _I_OBJ_
 class IObjEx : protected IObj
 {
     public:
-    virtual void Draw(ptr_decls::ptr_RendWindow&)                       = 0;
+    virtual void Draw(ptr_decls::ptr_RendWindow&)        = 0;
 };
 
 class IObjW : protected IObj
@@ -52,4 +58,4 @@ class IObjW : protected IObj
     public:
     virtual void Draw(ptr_decls::ptr_RendWindow&, const float)          = 0;
 };
-#endif // if-def _I_OBJ_
+#endif // if _I_OBJ_
