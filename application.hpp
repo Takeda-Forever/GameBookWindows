@@ -97,11 +97,13 @@ class Cloud : public IObjW
     void Update(const float, const int);
 };
 
-class Message : public ITxt
+class Paused : public ITxt
 {
     public:
     void Draw(ptr_decls::ptr_RendWindow&) override;
-    Message()
+
+
+    Paused()
     {
         obj->setFillColor(sf::Color::White);
     }
@@ -144,7 +146,7 @@ class Windows
     Windows() // Initialization of window
     {
         window = m_RendWindow
-                    (sf::VideoMode(sf::Vector2u(WindowParams.width, WindowParams.height)), WindowParams.title);
+                    (sf::VideoMode(sf::Vector2u(Params.width, Params.height)), Params.title);
     }
     ~Windows()
     {
@@ -188,6 +190,14 @@ class Windows
     {
         obj->Draw(window);
     }
+    bool isPaused()
+    {
+        return Params.pause;
+    }
+    void swap()
+    {   
+        Params.pause = !Params.pause;
+    }
 
 //--------------------------------------------------
 
@@ -200,8 +210,10 @@ void Update(const float second)
         DrawEx(tree);
         //DrawW(bee, second);
         //DrawW(cloud, second);
-        DrawT(msg);
-
+        if(isPaused())
+        {
+            DrawT(pause);
+        }
         window->display();
     }
 //---------------------------------------------------
@@ -212,7 +224,8 @@ void Update(const float second)
         std::string title = "SFML Game";    // A title of window -- on the upside of programm
         int         width = 1920,           // A window width  -- x: 0 - 1919bits on window
                     height = 1080;          // A window height -- y: 0 - 1079bits on window
-    }WindowParams;
+        bool pause = true;
+    }Params;
 //---------------------------------------------------
 
 //-------------------- Variables --------------------
@@ -221,7 +234,7 @@ void Update(const float second)
     //ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
     ptr_decls::DeclPtr<IObjEx>      tree{std::make_unique<Tree>()};
     ptr_decls::DeclPtr<IObjEx>      bg{std::make_unique<Background>()};
-    ptr_decls::DeclPtr<ITxt>        msg{std::make_unique<Message>()};
+    ptr_decls::DeclPtr<ITxt>        pause{std::make_unique<Paused>()};
 //---------------------------------------------------
 };
 

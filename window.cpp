@@ -17,8 +17,21 @@ int main() {
                 else if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
                 {
                     if (keyPressed->scancode == sf::Keyboard::Scancode::Escape){
-                        window.Button_Exit();
-                    }                   
+                        if(!window.isPaused())
+                        {
+                            window.swap();
+                        }
+                        else
+                        {
+                            window.Button_Exit();
+                        }
+                    }
+                    if(window.isPaused())
+                    {
+                        if (keyPressed->scancode == sf::Keyboard::Scancode::Enter){
+                            window.swap();
+                        }          
+                    }            
                 }
             }
             window.Update(time.asSeconds());
