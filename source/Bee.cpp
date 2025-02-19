@@ -1,8 +1,7 @@
 #include "include/application.hpp"
 
-void Bee::Draw(ptr_decls::ptr_RendWindow& window, const float second, bool debug = false)
+void Bee::Draw(ptr_decls::ptr_RendWindow& window, const float second)
 {
-    debugger = debug;
     if(Params.active == false)
     {
         setUp();
@@ -32,13 +31,22 @@ void Bee::setPos(const float second)
 void Bee::setUp()
 {
     if(debugger) printC("beeSetup");
-    Params.speed = (rand() % 200) + 200;
-    float height = (rand() % 500) + 500;
+    Params.speed = Params.Random.Speed.min  + (rand() % (Params.Random.Speed.max - Params.Random.Speed.min));
+    float height = Params.Random.Height.min + (rand() % (Params.Random.Height.max - Params.Random.Height.min));
     Params.pos = vec2f(2000, height);
     obj->setPosition(Params.pos);
     Params.active = true;
     if(debugger) printParams();
 }
+
+// Min=400
+// Max=200
+// random = x
+// min + (x % (max-min))
+// 400 + (18 % (500 - 400))
+// 400 + 18 % 100
+// 400 + 18
+// 418
 
 void Bee::Update(const float second)
 {

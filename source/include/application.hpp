@@ -13,8 +13,9 @@ Task:
 class Bee : public IObjW
 {
   public:
-    void Draw(ptr_decls::ptr_RendWindow&, const float, bool) override;
-    
+    void Draw(ptr_decls::ptr_RendWindow&, const float) override;
+    Bee(bool debug = false): debugger(debug)
+    {};
   protected:
     struct
     {
@@ -26,11 +27,25 @@ class Bee : public IObjW
         {
             return pos.x < edge;
         }
+        struct{
+            struct 
+            {
+                const unsigned min = 300;
+                const unsigned max = 500;
+            }Speed;
+            struct 
+            {
+                const unsigned min = 600;
+                const unsigned max = 800;
+            }Height;
+        }Random;
+        
     }Params;
     path _path                              = r_dir + "bee.png";
     ptr_decls::ptr_Texture texture          = m_Texture(_path);
     ptr_decls::ptr_Obj obj                  = m_Obj(*texture);
     bool debugger;
+
     virtual void printParams()              ;
     virtual void setUp()                    ;
     virtual void setPos(const float)        ;
@@ -40,8 +55,8 @@ class Bee : public IObjW
 class Cloud : public IObjW
 {
   public:
-    void Draw(ptr_decls::ptr_RendWindow&, const float, bool) override;
-
+    void Draw(ptr_decls::ptr_RendWindow&, const float) override;
+    Cloud(bool debug = false): debugger(debug){};
   protected:
     struct
     {
@@ -60,6 +75,17 @@ class Cloud : public IObjW
             return pos[select].x < edge;
         }
         bool active[3]{};
+        struct{
+            struct 
+            {
+                const unsigned min = 40;
+                const unsigned max = 200;
+            }Speed;
+            struct 
+            {
+                const unsigned max = 100;
+            }Height;
+        }Random;
     }Params;
     path _path                              = r_dir + "cloud.png";
     ptr_decls::ptr_Texture texture          = m_Texture(_path);
@@ -140,7 +166,7 @@ class Score : public ITxt
         sf::Font font{"resources/font.ttf"};
         int score = 0;
         std::string word = "score = " + std::to_string(score);
-        unsigned size = 100;
+        unsigned size = 50;
     }Params;
     
     ptr_decls::DeclPtr<sf::Text> obj = std::make_unique<sf::Text>(Params.font, Params.word, Params.size);
@@ -149,6 +175,33 @@ class Score : public ITxt
 
 class Windows
 {
+    private:
+//--------------------- Params ----------------------
+    struct // All parameter of window wich connected to the window in any way
+    {
+        std::string title = "SFML Game";    // A title of window -- on the upside of programm
+        int         width = 1920,           // A window width  -- x: 0 - 1919bits on window
+                    height = 1080;          // A window height -- y: 0 - 1079bits on window
+        bool pause = true;
+    }Params;
+//---------------------------------------------------
+
+//-------------------- Variables --------------------
+    ptr_decls::ptr_RendWindow       window;
+//                            IOjbW
+    ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
+    ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
+
+//                            IOjbEx
+    ptr_decls::DeclPtr<IObjEx>      tree{std::make_unique<Tree>()};
+    ptr_decls::DeclPtr<IObjEx>      bg{std::make_unique<Background>()};
+
+//                            ITxt
+    ptr_decls::DeclPtr<ITxt>        pause{std::make_unique<Paused>()};
+    ptr_decls::DeclPtr<ITxt>        score{std::make_unique<Score>()};
+//---------------------------------------------------
+
+
     public:
 //---------------------- Other ---------------------
     Windows() // Initialization of window
@@ -225,31 +278,6 @@ void Update(const float second)
         }
         window->display();
     }
-//---------------------------------------------------
-    private:
-//--------------------- Params ----------------------
-    struct // All parameter of window wich connected to the window in any way
-    {
-        std::string title = "SFML Game";    // A title of window -- on the upside of programm
-        int         width = 1920,           // A window width  -- x: 0 - 1919bits on window
-                    height = 1080;          // A window height -- y: 0 - 1079bits on window
-        bool pause = true;
-    }Params;
-//---------------------------------------------------
-
-//-------------------- Variables --------------------
-    ptr_decls::ptr_RendWindow       window;
-//                            IOjbW
-    ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
-    ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
-
-//                            IOjbEx
-    ptr_decls::DeclPtr<IObjEx>      tree{std::make_unique<Tree>()};
-    ptr_decls::DeclPtr<IObjEx>      bg{std::make_unique<Background>()};
-
-//                            ITxt
-    ptr_decls::DeclPtr<ITxt>        pause{std::make_unique<Paused>()};
-    ptr_decls::DeclPtr<ITxt>        score{std::make_unique<Score>()};
 //---------------------------------------------------
 };
 

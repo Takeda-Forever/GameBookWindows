@@ -56,6 +56,6 @@ class IObjEx : protected IObj
 class IObjW : protected IObj
 {
     public:
-    virtual void Draw(ptr_decls::ptr_RendWindow&, const float, bool = false)          = 0;
+    virtual void Draw(ptr_decls::ptr_RendWindow&, const float)          = 0;
 };
 #endif // if _I_OBJ_

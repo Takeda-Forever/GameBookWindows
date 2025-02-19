@@ -1,8 +1,7 @@
 #include "include/application.hpp"
 
-void Cloud::Draw(ptr_decls::ptr_RendWindow & window, const float second, bool debug = false)
+void Cloud::Draw(ptr_decls::ptr_RendWindow & window, const float second)
 {
-    debugger = debug;
     for(int select = 0; select < Params.cloudCount; select++)
         {
             if(!Params.active[select])
@@ -30,8 +29,8 @@ void Cloud::printParams(const int select)
 void Cloud::setUp(const int select)
 {
     if(debugger) printC("cloudSetup");
-    Params.speed[select] = (rand() % 100)+20;
-    float height = (rand() % 150);
+    Params.speed[select] = (rand() % Params.Random.Speed.max) + Params.Random.Speed.min;
+    float height = (rand() % Params.Random.Height.max);
     Params.pos[select] = vec2f(-202, height);
     obj[select]->setPosition(Params.pos[select]);
     Params.active[select] = true;
