@@ -1,15 +1,16 @@
-#include "application.hpp"
+#include "include/application.hpp"
 
-void Bee::Draw(ptr_decls::ptr_RendWindow& window, const float second)
+void Bee::Draw(ptr_decls::ptr_RendWindow& window, const float second, bool debug = false)
 {
-     if(Params.active == false)
-        {
-            setUp();
-        }
-        else
-        {
-            Update(second);
-        }
+    debugger = debug;
+    if(Params.active == false)
+    {
+        setUp();
+    }
+    else
+    {
+        Update(second);
+    }
     window->draw(*obj);
 }
 
@@ -30,13 +31,13 @@ void Bee::setPos(const float second)
 
 void Bee::setUp()
 {
-    printC("beeSetup");
+    if(debugger) printC("beeSetup");
     Params.speed = (rand() % 200) + 200;
     float height = (rand() % 500) + 500;
     Params.pos = vec2f(2000, height);
     obj->setPosition(Params.pos);
     Params.active = true;
-    printParams();
+    if(debugger) printParams();
 }
 
 void Bee::Update(const float second)
@@ -45,6 +46,6 @@ void Bee::Update(const float second)
     if(Params.isEdge())
     {
         Params.active = false;
-        std::cout << "bee get Edge of window: [x:" << Params.pos.x << " y:" << Params.pos.y << "];\n";
+        if(debugger) std::cout << "bee get Edge of window: [x:" << Params.pos.x << " y:" << Params.pos.y << "];\n";
     }
 }

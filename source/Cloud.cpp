@@ -1,14 +1,15 @@
-#include "application.hpp"
+#include "include/application.hpp"
 
-void Cloud::Draw(ptr_decls::ptr_RendWindow & window, const float second)
+void Cloud::Draw(ptr_decls::ptr_RendWindow & window, const float second, bool debug = false)
 {
+    debugger = debug;
     for(int select = 0; select < Params.cloudCount; select++)
         {
             if(!Params.active[select])
             {
                 setUp(select);
-                std::cout << "Cloud #" << select+1 << ":\n";
-                printParams(select);
+                if(debugger) std::cout << "Cloud #" << select+1 << ":\n";
+                if(debugger) printParams(select);
             }
             else{
                 Update(second, select);
@@ -28,7 +29,7 @@ void Cloud::printParams(const int select)
 
 void Cloud::setUp(const int select)
 {
-    printC("cloudSetup");
+    if(debugger) printC("cloudSetup");
     Params.speed[select] = (rand() % 100)+20;
     float height = (rand() % 150);
     Params.pos[select] = vec2f(-202, height);
@@ -48,6 +49,6 @@ void Cloud::Update(const float second, const int select)
     if(!Params.isEdge(select))
     {
         Params.active[select] = false;
-        std::cout << "cloud "<< select << " get Edge of window: [x:" << Params.pos[select].x << " y:" << Params.pos[select].y << "];\n";
+        if(debugger) std::cout << "cloud "<< select << " get Edge of window: [x:" << Params.pos[select].x << " y:" << Params.pos[select].y << "];\n";
     }
 }

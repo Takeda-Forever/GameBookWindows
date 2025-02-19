@@ -9,10 +9,11 @@ Task:
 #ifdef _I_OBJ_
 #ifdef _DECLARATIONS_
 
+//------------ IObjW -----------
 class Bee : public IObjW
 {
   public:
-    void Draw(ptr_decls::ptr_RendWindow&, const float) override;
+    void Draw(ptr_decls::ptr_RendWindow&, const float, bool) override;
     
   protected:
     struct
@@ -29,13 +30,51 @@ class Bee : public IObjW
     path _path                              = r_dir + "bee.png";
     ptr_decls::ptr_Texture texture          = m_Texture(_path);
     ptr_decls::ptr_Obj obj                  = m_Obj(*texture);
-
+    bool debugger;
     virtual void printParams()              ;
     virtual void setUp()                    ;
     virtual void setPos(const float)        ;
     virtual void Update(const float)        ;
 };
 
+class Cloud : public IObjW
+{
+  public:
+    void Draw(ptr_decls::ptr_RendWindow&, const float, bool) override;
+
+  protected:
+    struct
+    {
+        const size_t cloudCount = 3;
+        int speed[3]
+        {0, 0, 0};
+        const int edge = 1921;
+        vec2f pos[3]
+        {
+            vec2f{0, 0}, 
+            vec2f{0, 250}, 
+            vec2f{0, 500}
+        };
+        bool isEdge(const size_t select)
+        {
+            return pos[select].x < edge;
+        }
+        bool active[3]{};
+    }Params;
+    path _path                              = r_dir + "cloud.png";
+    ptr_decls::ptr_Texture texture          = m_Texture(_path);
+    ptr_decls::ptr_Obj obj[3]               = {m_Obj(*texture), m_Obj(*texture), m_Obj(*texture)};
+    bool debugger;
+    
+    void printParams(const int);
+    void setUp(const int);
+    void setPos(const float, const int);
+    void Update(const float, const int);
+
+};
+//------------------------------
+
+//------------ IObjEx ----------
 class Background : public IObjEx
 {
   public:
@@ -61,42 +100,10 @@ class Tree : public IObjEx
     ptr_decls::ptr_Texture texture          = m_Texture(_path);
     ptr_decls::ptr_Obj obj                  = m_Obj(*texture);
 };
-
-class Cloud : public IObjW
-{
-  public:
-    void Draw(ptr_decls::ptr_RendWindow&, const float) override;
-    
-  protected:
-    struct
-    {
-        const size_t cloudCount = 3;
-        int speed[3]
-        {0, 0, 0};
-        const int edge = 1921;
-        vec2f pos[3]
-        {
-            vec2f{0, 0}, 
-            vec2f{0, 250}, 
-            vec2f{0, 500}
-        };
-        bool isEdge(const size_t select)
-        {
-            return pos[select].x < edge;
-        }
-        bool active[3]{};
-    }Params;
-    path _path                              = r_dir + "cloud.png";
-    ptr_decls::ptr_Texture texture          = m_Texture(_path);
-    ptr_decls::ptr_Obj obj[3]               = {m_Obj(*texture), m_Obj(*texture), m_Obj(*texture)};
+//------------------------------
 
 
-    void printParams(const int);
-    void setUp(const int);
-    void setPos(const float, const int);
-    void Update(const float, const int);
-};
-
+//------------ ITxt ------------
 class Paused : public ITxt
 {
     public:
@@ -138,6 +145,7 @@ class Score : public ITxt
     
     ptr_decls::DeclPtr<sf::Text> obj = std::make_unique<sf::Text>(Params.font, Params.word, Params.size);
 };
+//------------------------------
 
 class Windows
 {
@@ -208,8 +216,9 @@ void Update(const float second)
 
         DrawEx(bg);
         DrawEx(tree);
-        //DrawW(bee, second);
-        //DrawW(cloud, second);
+        DrawW(bee, second);
+        DrawW(cloud, second);
+        DrawT(score);
         if(isPaused())
         {
             DrawT(pause);
@@ -230,11 +239,17 @@ void Update(const float second)
 
 //-------------------- Variables --------------------
     ptr_decls::ptr_RendWindow       window;
-    //ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
-    //ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
+//                            IOjbW
+    ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
+    ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
+
+//                            IOjbEx
     ptr_decls::DeclPtr<IObjEx>      tree{std::make_unique<Tree>()};
     ptr_decls::DeclPtr<IObjEx>      bg{std::make_unique<Background>()};
+
+//                            ITxt
     ptr_decls::DeclPtr<ITxt>        pause{std::make_unique<Paused>()};
+    ptr_decls::DeclPtr<ITxt>        score{std::make_unique<Score>()};
 //---------------------------------------------------
 };
 
