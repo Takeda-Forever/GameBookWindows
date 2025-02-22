@@ -25,6 +25,13 @@
     #define m_Clock                     std::make_unique<sf::Clock>
     #define m_Time                      std::make_unique<sf::Time>
 
+    enum GameRule
+    { 
+        NOTHING = 0,
+        GameOver,
+        GameRestart
+    };
+
 #endif // _DECLARATIONS_
 
 #ifndef _I_OBJ_
@@ -43,7 +50,7 @@ class IObj
 class ITxt
 {
     public:
-    virtual void Draw(ptr_decls::ptr_RendWindow&) = 0;
+    virtual void Draw(ptr_decls::ptr_RendWindow&, const GameRule) = 0;
 };
 
 #ifdef _I_OBJ_

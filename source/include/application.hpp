@@ -21,8 +21,9 @@ class Bee : public IObjW
     {
         bool active = false;
         float speed = 150.0f;
-        vec2f pos{0, 800};
+        vec2f pos{};
         const int edge = -100;
+        float spawn = 2500;
         bool isEdge()
         {
             return pos.x < edge;
@@ -30,8 +31,8 @@ class Bee : public IObjW
         struct{
             struct 
             {
-                const unsigned min = 300;
-                const unsigned max = 500;
+                const unsigned min = 100;
+                const unsigned max = 300;
             }Speed;
             struct 
             {
@@ -98,6 +99,28 @@ class Cloud : public IObjW
     void Update(const float, const int);
 
 };
+
+class TimeBar
+{
+  public:
+    bool Draw(ptr_decls::ptr_RendWindow&, const float);
+    void Reset();
+
+  protected:
+    struct
+    {
+        float timeBarStartWidth = 400;
+        float timeBarHeight = 80;
+        float DefaultTime = 6.0;
+        float timeRemaining = DefaultTime;
+        float timeBarWidthPerSecond = timeBarStartWidth / timeRemaining;
+        bool  Init = false;
+    }Params;
+
+    ptr_decls::DeclPtr<sf::RectangleShape> obj{std::make_unique<sf::RectangleShape>()};
+    void setPos();
+    void setUp();
+};
 //------------------------------
 
 //------------ IObjEx ----------
@@ -133,7 +156,7 @@ class Tree : public IObjEx
 class Paused : public ITxt
 {
     public:
-    void Draw(ptr_decls::ptr_RendWindow&) override;
+    void Draw(ptr_decls::ptr_RendWindow&, const GameRule) override;
 
 
     Paused()
@@ -145,6 +168,7 @@ class Paused : public ITxt
     {
         sf::Font font{"resources/font.ttf"};
         std::string word = "Press Enter to start!";
+        std::string loseword = "Game Over!";
         unsigned size = 75;
         vec2f pos{500, 500};
     }Params;
@@ -155,7 +179,7 @@ class Paused : public ITxt
 class Score : public ITxt
 {
     public:
-    void Draw(ptr_decls::ptr_RendWindow&) override;
+    void Draw(ptr_decls::ptr_RendWindow&, const GameRule) override;
     Score()
     {
         obj->setFillColor(sf::Color::White);
@@ -173,6 +197,7 @@ class Score : public ITxt
 };
 //------------------------------
 
+
 class Windows
 {
     private:
@@ -183,6 +208,7 @@ class Windows
         int         width = 1920,           // A window width  -- x: 0 - 1919bits on window
                     height = 1080;          // A window height -- y: 0 - 1079bits on window
         bool pause = true;
+        bool isOver = true;
     }Params;
 //---------------------------------------------------
 
@@ -191,6 +217,7 @@ class Windows
 //                            IOjbW
     ptr_decls::DeclPtr<IObjW>       bee{std::make_unique<Bee>()};
     ptr_decls::DeclPtr<IObjW>       cloud{std::make_unique<Cloud>()};
+    ptr_decls::DeclPtr<TimeBar>       time{std::make_unique<TimeBar>()};
 
 //                            IOjbEx
     ptr_decls::DeclPtr<IObjEx>      tree{std::make_unique<Tree>()};
@@ -201,6 +228,22 @@ class Windows
     ptr_decls::DeclPtr<ITxt>        score{std::make_unique<Score>()};
 //---------------------------------------------------
 
+void DrawW(ptr_decls::DeclPtr<TimeBar>& obj, const float second)
+{
+    Params.isOver = obj->Draw(window, second);
+}
+void DrawW(ptr_decls::DeclPtr<IObjW>& obj, const float second)
+{
+    obj->Draw(window, second);
+}
+void DrawEx(ptr_decls::DeclPtr<IObjEx>& obj)
+{
+    obj->Draw(window);
+}
+void DrawT(ptr_decls::DeclPtr<ITxt>& obj, GameRule rule = NOTHING)
+{
+    obj->Draw(window, rule);
+}
 
     public:
 //---------------------- Other ---------------------
@@ -226,11 +269,6 @@ class Windows
         std::cout << "-Command: Exit;\n";
         window->close();
     }
-    void Button_Exit()  // Exit with button report
-    {
-        std::cout << "-Button: ESC;\n";
-        Exit();
-    }
     virtual bool isOpen() // Own condition
     {
         return window->isOpen();
@@ -238,18 +276,6 @@ class Windows
     auto getEvent()      // Get window event from ::pollEvent()
     {
         return window->pollEvent();
-    }
-    void DrawW(ptr_decls::DeclPtr<IObjW>& obj, const float second)
-    {
-        obj->Draw(window, second);
-    }
-    void DrawEx(ptr_decls::DeclPtr<IObjEx>& obj)
-    {
-        obj->Draw(window);
-    }
-    void DrawT(ptr_decls::DeclPtr<ITxt>& obj)
-    {
-        obj->Draw(window);
     }
     bool isPaused()
     {
@@ -259,26 +285,46 @@ class Windows
     {   
         Params.pause = !Params.pause;
     }
-
-//--------------------------------------------------
-
+    void ResetTime()
+    {
+        time->Reset();
+    }
+    void RestartAll()
+    {
+        ResetTime();
+        Params.isOver = true;
+        bee = std::make_unique<Bee>();
+        DrawT(score, GameRule::GameRestart);
+        DrawT(pause, GameRule::GameRestart);
+    }
 //--------------------- Update ---------------------
 void Update(const float second)
     {
         window->clear();
+        
+        if(!Params.isOver) swap();
 
         DrawEx(bg);
         DrawEx(tree);
-        DrawW(bee, second);
+
+        if(!isPaused() && Params.isOver) DrawW(bee, second);
+        else if(!isPaused() && !Params.isOver) DrawW(bee, 0);
         DrawW(cloud, second);
-        DrawT(score);
-        if(isPaused())
-        {
-            DrawT(pause);
-        }
+
+        if(!Params.isOver)  DrawT(score, GameRule::GameOver);
+        else                DrawT(score);
+
+        if(isPaused())      DrawT(pause);
+        else if(!Params.isOver)      DrawT(pause, GameRule::GameOver);
+
+        if(!isPaused())     DrawW(time, second);
+        else                DrawW(time, 0);
+        
         window->display();
     }
-//---------------------------------------------------
+//--------------------------------------------------
+
+
 };
 
 #endif

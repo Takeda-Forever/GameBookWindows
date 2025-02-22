@@ -1,7 +1,7 @@
-TARGET = Window
+TARGET = Game
 
-SRC_DIR = source
-INC_DIR = source/include
+SRC_DIR = ./source
+INC_DIR = ./source/include
 
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 

@@ -33,7 +33,7 @@ void Bee::setUp()
     if(debugger) printC("beeSetup");
     Params.speed = Params.Random.Speed.min  + (rand() % (Params.Random.Speed.max - Params.Random.Speed.min));
     float height = Params.Random.Height.min + (rand() % (Params.Random.Height.max - Params.Random.Height.min));
-    Params.pos = vec2f(2000, height);
+    Params.pos = vec2f(Params.spawn, height);
     obj->setPosition(Params.pos);
     Params.active = true;
     if(debugger) printParams();

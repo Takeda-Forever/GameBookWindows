@@ -20,16 +20,14 @@ int main() {
                         if(!window.isPaused())
                         {
                             window.swap();
-                        }
-                        else
-                        {
-                            window.Button_Exit();
+                            window.RestartAll();
                         }
                     }
                     if(window.isPaused())
                     {
                         if (keyPressed->scancode == sf::Keyboard::Scancode::Enter){
                             window.swap();
+                            clock.reset();
                         }          
                     }            
                 }
