@@ -4,6 +4,9 @@
 
 /*
 Task:
+Finish the struct of classes
+
+
 
 */
 #ifdef _I_OBJ_
@@ -47,10 +50,10 @@ class Bee : public IObjW
     ptr_decls::ptr_Obj obj                  = m_Obj(*texture);
     bool debugger;
 
-    virtual void printParams()              ;
-    virtual void setUp()                    ;
-    virtual void setPos(const float)        ;
-    virtual void Update(const float)        ;
+    void printParams()              ;
+    void setUp()                    ;
+    void setPos(const float)        ;
+    void Update(const float)        ;
 };
 
 class Cloud : public IObjW
@@ -100,6 +103,8 @@ class Cloud : public IObjW
 
 };
 
+//------------------------------
+
 class TimeBar
 {
   public:
@@ -121,7 +126,7 @@ class TimeBar
     void setPos();
     void setUp();
 };
-//------------------------------
+
 
 //------------ IObjEx ----------
 class Background : public IObjEx

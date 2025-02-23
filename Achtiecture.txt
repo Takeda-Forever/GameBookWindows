@@ -1,0 +1,175 @@
+Interface:
+     IObj            IText      
+   /     \            |
+  |       |           |--------
+ IObjW   IObjEx       | class |
+  |       |           |-------|
+  |       |           |       |
+  |       |          Pause   Score
+  |-------|           |--------|
+  | class |                    |
+  |-------|--------------      |
+  |       |             |      |
+  |     Background     Tree    |
+  |             |       |      |
+  |----------   |-------|      | 
+  |         |           |      |
+  Bee     Cloud         |      |
+  |         |           |      |
+  |---------|-----------|------|
+                 |
+                 ↓
+              Windows
+
+/----------------------------------/
+
+Bee:-------> [ Draw ] <-- [IObjW]
+
+    Params:
+     - active[bool]
+     - speed[float]
+     - pos[vec2f]
+     - edge[const int]
+     - spawn[float]
+     - [ isEdge ] -> bool
+     - Random:
+         - Speed:
+          - min[const unsigned]
+          - max[const unsigned]
+         - Height:
+          - min[const unsigned]
+          - max[const unsigned]
+
+    Variables:
+     - path[string]
+     - texture[Pointer.Texture]
+     - object[Pointer.Sprite]
+     - debugger[bool]
+    
+         /----------------------------------------------\
+         ↓                 ↓              ↓             ↓
+    [ printParams ]    [ setUp ]     [ setPos ]     [ Update ]
+
+
+/----------------------------------/
+
+Cloud:-------> [ Draw ] <-- [IObjW]
+      
+    Params:
+     - cloudCount[const size_t]
+     - active[Array.bool[3]]
+     - speed[Array.float[3]]
+     - pos[Array.vec2f[3]]
+     - edge[const int]
+     - spawn[float]
+     - isEdge[func] -> bool
+     - Random:
+         - Speed:
+          - min[const unsigned]
+          - max[const unsigned]
+         - Height:
+          - max[const unsigned]
+       
+    Variables:
+     - path[string]
+     - texture[Pointer.Texture]
+     - object[Array.Pointer.Sprite[3]]
+     - debugger[bool]
+      
+         /----------------------------------------------\
+         ↓                 ↓              ↓             ↓
+    [ printParams ]    [ setUp ]     [ setPos ]     [ Update ]
+
+
+/----------------------------------/
+
+TimeBar:-------> [ Draw ] | [ Reset ]
+
+        Params:
+         - timeBarStartWidth[float]
+         - timeBarHeight[float]
+         - DefaultTime[float]
+         - timeRemaining[float]
+         - timeBarWidthPerSecond[float]
+         - Init[bool]
+
+        Variables:
+        - object[Pointer.RectangleShape]
+
+        /--------------\
+        ↓              ↓
+    [ setUp ]     [ setPos ] 
+
+
+/----------------------------------/
+
+Paused:-------> [ Draw ] <-- [ITxT]
+
+        Params:
+         - font[Font]
+         - word[string]
+         - loseword[string]
+         - size[unsigned]
+         - pos[vec2f]
+
+        Variables:
+        - object[Pointer.Text(font, word, size)]
+
+/----------------------------------/
+
+Paused:-------> [ Draw ] <-- [ITxT]
+
+        Params:
+         - font[Font]
+         - score[int]
+         - word[string]
+         - size[unsigned]
+
+        Variables:
+        - object[Pointer.Text(font, word, size)]
+
+/----------------------------------/
+               Window
+/----------------------------------/
+
+Windows:
+
+    Params:
+     - title[string]
+     - width[int]
+     - height[int]
+     - pause[bool]
+     - isOver[bool]
+
+     Variables:
+     - window[Pointer.RenderWindow]
+     - bee[Pointer.IObjW -> Bee]
+     - cloud[Pointer.IObjW -> Cloud]
+     - time[Pointer.TimeBar]
+     - tree[Pointer.IObjEx -> Tree]
+     - bg[Pointer.IObjEx -> Background]
+     - pause[Pointer.ITxT -> Paused]
+     - score[Pointer.ITxT -> Score]
+
+     /---------------------------------\
+     | Main functions to rend Pointers | 
+    /-----------------------------------\
+    ↓           ↓           ↓           ↓
+[ DrawW ]   [ DrawW ]  [ DrawEx ]    [ DrawT ]
+
+
+    /----------------------------------------\
+    |  other functions for class management  | 
+    /----------------------------------------\
+    ↓                ↓          ↓            ↓
+ [ Abort_Exit ]  [ Exit ]  [ isOpen ]   [ getEvent ]
+______________________________________________________
+      ↓           ↓            ↓              ↓
+ [ isPaused ]  [ swap ]  [ ResetTime ]  [ RestartAll ]
+_______________________________________________________
+                        ↓
+                    [ Update ]
+
+
+
+
